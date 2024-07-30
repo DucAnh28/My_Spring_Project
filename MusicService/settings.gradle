@@ -1,1 +1,4 @@
 rootProject.name = 'MusicService'
+
+include(':common-config')
+project(':common-config').projectDir = file("../CommonConfig")
