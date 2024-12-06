@@ -26,3 +26,6 @@ spring:
       jdbc:
         time_zone: Asia/Ho_Chi_Minh
     open-in-view: false
+  jwt:
+    time-out: ${JWT_SECRET_TIME}
+    key: ${JWT_SECRET_KEY}

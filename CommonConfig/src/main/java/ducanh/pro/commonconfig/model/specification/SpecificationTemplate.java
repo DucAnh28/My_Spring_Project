@@ -1,4 +1,4 @@
-package ducanh.pro.commonconfig.domain.specification;
+package ducanh.pro.commonconfig.model.specification;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;

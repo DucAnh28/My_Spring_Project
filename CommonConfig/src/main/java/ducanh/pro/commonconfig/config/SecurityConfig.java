@@ -1,46 +1,101 @@
-package ducanh.pro.commonconfig.config;
-
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import vn.gobiz.dota.chen.config.properties.MultiOAuth2ResourceServerProperties;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+@Slf4j
 @Configuration
 @EnableWebSecurity
-
-@ConditionalOnClass(SecurityWebFilterChain.class)
+@EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Autowired
+    private CustomTokenFilter customTokenFilter;
 
-        return http
-                // enable csrf protection with cookie
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource(corsProperties)))
-                // use stateless session management
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(AbstractHttpConfigurer::disable)
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                .authorizeHttpRequests(auth -> auth
-                        // accept all requests to static resources
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
-                        // accept all requests to actuator and authentication endpoints
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/public").permitAll()
-                        .requestMatchers("/**/test").permitAll()
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver) throws Exception {
+        http
+                .csrf().disable()
+                .formLogin().disable()
+                .rememberMe().disable()
+                .addFilterAt(customTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                        // require authentication for all other requests
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/swagger/**").permitAll()
+                        .requestMatchers("/internal/**").permitAll()
+                        .requestMatchers("/public/**").permitAll()
+                        .requestMatchers("/internal/**").permitAll()
                         .anyRequest().authenticated()
-                ).build();
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver))
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+        return http.build();
+    }
+
+
+
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("permissions");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
+        converter.setPrincipalClaimName("preferred_username");
+        converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return converter;
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver(MultiOAuth2ResourceServerProperties properties,
+                                                                                           OAuth2ResourceServerProperties resourceServerProperties,
+                                                                                           JwtAuthenticationConverter jwtAuthenticationConverter) {
+        var trustedIssuers = new HashSet<String>();
+        trustedIssuers.add(resourceServerProperties.getJwt().getIssuerUri());
+        if (properties.getTrustedIssuers() != null && !properties.getTrustedIssuers().isEmpty()) {
+            trustedIssuers.addAll(properties.getTrustedIssuers());
+        }
+        final Map<String, AuthenticationManager> managers = new HashMap<>();
+        trustedIssuers.stream().forEach(l -> {
+            log.info("Init authentication manager for issuer: {}", l);
+            final var decoder = JwtDecoders.fromIssuerLocation(l);
+            final var provider = new JwtAuthenticationProvider(decoder);
+            provider.setJwtAuthenticationConverter(jwtAuthenticationConverter);
+            managers.put(l, provider::authenticate);
+        });
+        return new JwtIssuerAuthenticationManagerResolver(managers::get);
     }
 }
-

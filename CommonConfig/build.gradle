@@ -29,6 +29,7 @@ dependencies {
     api 'org.springframework.boot:spring-boot-starter-aop'
     api 'org.springframework.data:spring-data-commons'
 
+    api group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
     api group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
     compileOnly 'org.hibernate.orm:hibernate-jpamodelgen:6.3.2.Final'
     annotationProcessor 'org.hibernate.orm:hibernate-jpamodelgen:6.3.2.Final'
