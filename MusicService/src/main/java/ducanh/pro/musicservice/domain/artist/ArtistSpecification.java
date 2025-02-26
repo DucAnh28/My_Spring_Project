@@ -1,6 +1,6 @@
 package ducanh.pro.musicservice.domain.artist;
 
-import ducanh.pro.commonconfig.domain.specification.SpecificationTemplate;
+import ducanh.pro.commonconfig.model.specification.SpecificationTemplate;
 
 public class ArtistSpecification extends SpecificationTemplate {
 

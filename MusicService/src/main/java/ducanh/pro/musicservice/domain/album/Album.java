@@ -1,6 +1,6 @@
 package ducanh.pro.musicservice.domain.album;
 
-import ducanh.pro.commonconfig.domain.entity.BaseEntity;
+import ducanh.pro.commonconfig.domain.BaseEntity;
 import ducanh.pro.musicservice.domain.artist.Artist;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

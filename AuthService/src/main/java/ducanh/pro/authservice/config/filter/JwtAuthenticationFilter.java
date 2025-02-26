@@ -32,9 +32,9 @@
 //                // Lấy username từ token:
 //                String username = jwtService.getUsernameFromJwtToken(token);
 //                // Lấy userDetail thông qua username:
-//                UserDetails userDetails = appUserService.loadUserByUsername(username);
+////                UserDetails userDetails = appUserService.loadUserByUsername(username);
 //                // Thực hiện việc xác thực thông qua token
-//                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+////                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 //                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 //                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 //            }

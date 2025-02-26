@@ -1,8 +1,8 @@
 package ducanh.pro.musicservice.domain.artist;
 
-import ducanh.pro.commonconfig.service.CommonService;
 import ducanh.pro.commonconfig.domain.PagingResp;
-import ducanh.pro.commonconfig.domain.specification.SpecificationTemplate;
+import ducanh.pro.commonconfig.model.specification.SpecificationTemplate;
+import ducanh.pro.commonconfig.service.CommonService;
 import ducanh.pro.musicservice.domain.artist.dto.ArtistDTO;
 import ducanh.pro.musicservice.domain.artist.request.ArtistCreateReq;
 import ducanh.pro.musicservice.domain.artist.request.ArtistSearchReq;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ArtistService  {
+public class ArtistService {
 
     private final CommonService commonService;
     private final ArtistRepository artistRepository;
