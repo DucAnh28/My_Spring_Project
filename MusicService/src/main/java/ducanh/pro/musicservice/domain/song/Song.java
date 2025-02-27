@@ -1,8 +1,9 @@
 package ducanh.pro.musicservice.domain.song;
 
 import ducanh.pro.commonconfig.domain.BaseEntity;
-import ducanh.pro.musicservice.domain.album.Album;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,7 +32,9 @@ public class Song extends BaseEntity {
     @Column(name = "link")
     String link;
 
-    @ManyToOne
-    @JoinColumn(name = "album_id")
-    Album album;
+    @Column(name = "album_id")
+    Long albumId;
+
+    @Column(name = "artist_id")
+    Long artistId;
 }

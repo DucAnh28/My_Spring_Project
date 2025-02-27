@@ -13,8 +13,4 @@ public class ArtistController {
 
     private final ArtistService artistService;
 
-    @PostMapping()
-    public ArtistDTO addArtist(@RequestBody ArtistCreateReq req) {
-        return artistService.create(req);
-    }
 }

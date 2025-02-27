@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @Getter
 @Entity(name = "album")
-@Table(name = "m_album")
+@Table(name = "album")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Album extends BaseEntity {
 

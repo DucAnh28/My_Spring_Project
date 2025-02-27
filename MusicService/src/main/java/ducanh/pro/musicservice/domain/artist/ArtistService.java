@@ -30,7 +30,7 @@ public class ArtistService {
 
     public ArtistDTO create(ArtistCreateReq req) {
         Artist artist = Artist.builder()
-                .name(req.getArtistName())
+                .name(req.getName())
                 .age(req.getAge())
                 .description(req.getDescription())
                 .build();

@@ -1,5 +1,6 @@
 package ducanh.pro.musicservice.domain.artist.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,9 @@ import java.io.Serializable;
 @Builder
 public class ArtistCreateReq implements Serializable {
 
-    private String artistName;
+    @NotBlank(message = "name is required")
+    private String name;
     private Integer age;
+    @NotBlank(message = "description is required")
     private String description;
 }

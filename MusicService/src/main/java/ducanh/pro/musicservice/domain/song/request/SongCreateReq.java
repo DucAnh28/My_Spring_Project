@@ -17,4 +17,6 @@ public class SongCreateReq {
     private String link;
 
     private Long artistId;
+
+    private Long albumId;
 }
