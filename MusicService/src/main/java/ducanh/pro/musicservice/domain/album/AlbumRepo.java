@@ -1,6 +1,6 @@
 package ducanh.pro.musicservice.domain.album;
 
-import ducanh.pro.musicservice.common.BaseRepository;
+import ducanh.pro.commonconfig.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

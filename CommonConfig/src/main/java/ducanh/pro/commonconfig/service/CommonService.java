@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor
-public class CommonService {
+public abstract class CommonService {
 
     private final MapperUtil mapperUtil;
 
